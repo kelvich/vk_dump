@@ -28,8 +28,6 @@ class VK
   
 end
 
-# 'ea936fa25d7bc21b04814f0124f1384bba46825cc8be5d02ba6a50122e5164ca78158f3b44f61c1f43e32'
-
 api = VK.new(ARGV[0])
 
 in_max =  JSON.load(api.messages_get(:in,  100000000000))['response'][0]
