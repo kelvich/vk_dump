@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+require "rubygems"
+require "json"
 require "uri"
 require "open-uri"
 
@@ -25,27 +27,28 @@ class VK
     uri.read
   end
   
+  def load_all(direction)
+    max = messages_get(:in,  100000000000)[/\d+/].to_i
+    puts "#{max} #{direction} messages"
+    messages = []
+    (0..max).step(MSG_COUNT).each do |offset|
+      messages << JSON.load(messages_get(direction, offset))['response']
+      print "\rReceived messages: saved #{offset} of #{max} total"
+      sleep 0.3
+    end
+    messages
+  end
+
 end
 
 api = VK.new(ARGV[0])
 
-in_max = api.messages_get(:in,  100000000000)[/\d+/].to_i
-out_max = api.messages_get(:out, 100000000000)[/\d+/].to_i
-
-puts "Received: #{in_max}, Sended: #{out_max}"
-
-file_in = File.open("messages.in.json", 'w')
-(0..in_max).step(VK::MSG_COUNT).each do |offset|
-  file_in.write api.messages_get(:in, offset)
-  print "\rReceived messages: saved #{offset} of #{in_max} total"
-  sleep 0.3
+File.open("messages.in.json", 'w') do |f|
+  f.write JSON.dump(api.load_all(:in))
 end
 
-file_out = File.open("messages.out.json", 'w')
-(0..out_max).step(VK::MSG_COUNT).each do |offset|
-  file_out.write api.messages_get(:out, offset)
-  print "\rSended messages: saved #{offset} of #{in_max} total"
-  sleep 0.3
+File.open("messages.out.json", 'w') do |f|
+  f.write JSON.dump(api.load_all(:out))
 end
 
 
