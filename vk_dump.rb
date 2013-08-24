@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-require "json"
 require "uri"
 require "open-uri"
 
@@ -30,8 +29,8 @@ end
 
 api = VK.new(ARGV[0])
 
-in_max =  JSON.load(api.messages_get(:in,  100000000000))['response'][0]
-out_max = JSON.load(api.messages_get(:out, 100000000000))['response'][0]
+in_max = api.messages_get(:in,  100000000000)[/\d+/].to_i
+out_max = api.messages_get(:out, 100000000000)[/\d+/].to_i
 
 puts "Received: #{in_max}, Sended: #{out_max}"
 
