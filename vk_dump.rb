@@ -15,13 +15,13 @@ class VK
   def messages_get(direction, offset=0)
     uri = URI(API_URL)
     uri.path = "/method/messages.get"
-    uri.query = URI.encode_www_form({
+    uri.query = {
       :offset => offset,
       :preview_length => 0,
       :count => 200,
       :out => direction == :in ? 0 : 1,
       :access_token => @token
-    })
+    }.map{|k,v| "#{k}=#{v}"}.join('&')
     uri.read
   end
   
